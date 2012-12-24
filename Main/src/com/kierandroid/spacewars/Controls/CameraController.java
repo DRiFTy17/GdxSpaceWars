@@ -1,5 +1,6 @@
 package com.kierandroid.spacewars.Controls;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
@@ -11,24 +12,34 @@ public class CameraController
 	// How fast we CAN rotate and move
 	private final float ROTATION_SPEED = 25.23f;
 
+	// Camera settings
+	private final float FOV = 45.0f;
+	private final Vector3 LOOK_AT_POINT = new Vector3(0, 0, 0);
+	private final float NEAR = 0.1f;
+	private final float FAR = 100.0f;
+	private final float CAMERA_DISTANCE = 3.5f;
+
 	// The camera we are controlling
-	private PerspectiveCamera camera;
+	public PerspectiveCamera camera;
 
 	// The orientation of the camera represented by a rotation matrix
 	public Quaternion rotation;
 	private Quaternion newRotation;
 
-	final Vector3 tmp = new Vector3();
 	Vector3 right = new Vector3();
 
 	/**
 	 * The Constructor
-	 * @param camera
 	 */
-	public CameraController(PerspectiveCamera camera)
+	public CameraController()
 	{
 		// Set the camera we are controlling
-		this.camera = camera;
+		camera = new PerspectiveCamera(FOV, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		camera.position.set(Vector3.tmp.set(0, 0, -CAMERA_DISTANCE));
+		camera.lookAt(LOOK_AT_POINT.x, LOOK_AT_POINT.y, LOOK_AT_POINT.z);
+		camera.near = NEAR;
+		camera.far = FAR;
+		camera.update();
 
 		// Set up our rotation quaternion
 		rotation = new Quaternion();
@@ -43,7 +54,7 @@ public class CameraController
 	{
 		float aspect = camera.viewportWidth / camera.viewportHeight;
 		camera.projection.setToProjection(Math.abs(camera.near), Math.abs(camera.far), camera.fieldOfView, aspect);
-		camera.view.setToLookAt(camera.position, tmp.set(camera.position).add(camera.direction), camera.up);
+		camera.view.setToLookAt(camera.position, Vector3.tmp.set(camera.position).add(camera.direction), camera.up);
 
 		camera.view.rotate(rotation);
 

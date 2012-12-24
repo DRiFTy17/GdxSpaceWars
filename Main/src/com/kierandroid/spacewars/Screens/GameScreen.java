@@ -3,10 +3,8 @@ package com.kierandroid.spacewars.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -23,7 +21,7 @@ import com.kierandroid.spacewars.Utilities.GameState;
 public class GameScreen extends TransitionScreen
 {
 	// Our entry context
-	private EntryPoint entryPoint;
+	private EntryPoint _entryPoint;
 
 	// 3D Game Objects
 	private Planet _planet;
@@ -31,18 +29,17 @@ public class GameScreen extends TransitionScreen
 	private Asteroid _asteroid;
 
 	// Actors
-	Joystick joystick;
+	Joystick _joystick;
 
 	// Renderers
-	private SpriteBatch batch;
+	private SpriteBatch _batch;
 	private Stage _stage;
 
 	// Camera
-	private PerspectiveCamera camera;
-	private CameraController controller;
+	private CameraController _controller;
 
 	// Fonts
-	private BitmapFont font;
+	private BitmapFont _font;
 
 	/**
 	 * Default constructor
@@ -53,7 +50,7 @@ public class GameScreen extends TransitionScreen
 		super(entryPoint);
 
 		// Our reference to the entry point class
-		this.entryPoint = entryPoint;
+		this._entryPoint = entryPoint;
 	}
 
 	/**
@@ -62,6 +59,9 @@ public class GameScreen extends TransitionScreen
 	@Override
 	public void create()
 	{
+		// Turn debugging on or off
+		GameState.DEBUG = true;
+
 		// Create the planet
 		_planet = new Planet();
 
@@ -73,24 +73,13 @@ public class GameScreen extends TransitionScreen
 		_asteroid = new Asteroid();
 		_asteroid.mesh.scale(0.1f, 0.1f, 0.1f);
 
-		// Get the planet dimensions for use in setting up our camera
-		float len = _planet.boundingBox.getDimensions().len();
-
-		// Set the camera rotation vector
-		camera = new PerspectiveCamera(45, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		camera.position.set(Vector3.tmp.set(0, 0, -3.5f));
-		camera.lookAt(0, 0, 0);
-		camera.near = 0.1f;
-		camera.far = 100f;
-		camera.update();
-
-		// Set up our camera controller
-		controller = new CameraController(camera);
+		// Set up our camera _controller
+		_controller = new CameraController();
 
 		// Renderers
-		batch = new SpriteBatch();
-		font = new BitmapFont();
-		font.setColor(Color.GREEN);
+		_batch = new SpriteBatch();
+		_font = new BitmapFont();
+		_font.setColor(Color.GREEN);
 
 		// Stage
 		_stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false); // Draws our HUD
@@ -112,23 +101,23 @@ public class GameScreen extends TransitionScreen
 	 */
 	private void setActors()
 	{
-		joystick = new Joystick(JoystickConfiguration.Left);
-		joystick.addListener(new InputListener() {
+		_joystick = new Joystick(JoystickConfiguration.Left);
+		_joystick.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				joystick.touchDown(x, y);
+				_joystick.touchDown(x, y);
 				return true;
 			}
 
 			public void touchDragged(InputEvent event, float x, float y, int pointer) {
-				joystick.touchDragged(x, y);
+				_joystick.touchDragged(x, y);
 			}
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				joystick.touchUp(x, y);
+				_joystick.touchUp(x, y);
 			}
 		});
 
-		_stage.addActor(joystick);
+		_stage.addActor(_joystick);
 	}
 
 	/**
@@ -145,7 +134,7 @@ public class GameScreen extends TransitionScreen
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		gl.glEnable(GL10.GL_DEPTH_TEST);
 
-		camera.apply(Gdx.gl10);
+		_controller.camera.apply(Gdx.gl10);
 
 		if (_planet != null)
 		{
@@ -173,17 +162,20 @@ public class GameScreen extends TransitionScreen
 		_stage.draw();
 
 		// Draw our debugging information
-		batch.begin();
-		font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight() - 10);
-		batch.end();
+		if (GameState.DEBUG)
+		{
+			_batch.begin();
+			_font.draw(_batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight() - 10);
+			_batch.end();
+		}
 
 		if (GameState.currentState == State.Running)
 		{
 			// Move the camera
-			if (joystick.isTouched)
+			if (_joystick.isTouched)
 			{
-				joystick.updateRotationAxis();
-				controller.updateRotation(joystick.rotationAxis);
+				_joystick.updateRotationAxis();
+				_controller.updateRotation(_joystick.rotationAxis);
 			}
 		}
 	}
@@ -194,7 +186,6 @@ public class GameScreen extends TransitionScreen
 	@Override
 	public void show()
 	{
-
 	}
 
 	/**
@@ -212,7 +203,6 @@ public class GameScreen extends TransitionScreen
 	@Override
 	public void pause()
 	{
-
 	}
 
 	/**
@@ -221,7 +211,6 @@ public class GameScreen extends TransitionScreen
 	@Override
 	public void resume()
 	{
-
 	}
 
 	/**
