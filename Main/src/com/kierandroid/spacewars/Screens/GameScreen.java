@@ -65,7 +65,7 @@ public class GameScreen extends TransitionScreen
 		// Create the planet
 		_planet = new Planet();
 
-		// Create the skysphere
+		// Create the skysphere for background
 		_skySphere = new SkySphere();
 		_skySphere.mesh.scale(SkySphere.SCALE_FACTOR, SkySphere.SCALE_FACTOR, SkySphere.SCALE_FACTOR);
 
@@ -88,9 +88,9 @@ public class GameScreen extends TransitionScreen
 		controller = new CameraController(camera);
 
 		// Renderers
-		batch = new SpriteBatch(); // This will draw our BitmapFont
-		font = new BitmapFont(); // The font that is used for debugging
-		font.setColor(Color.GREEN); // Does anyone know what this does?
+		batch = new SpriteBatch();
+		font = new BitmapFont();
+		font.setColor(Color.GREEN);
 
 		// Stage
 		_stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false); // Draws our HUD
