@@ -26,6 +26,8 @@ public class SkySphere
 
 	public void render(GL10 gl, float delta)
 	{
+		gl.glCullFace(GL10.GL_FRONT);
+
 		gl.glPushMatrix();
 		rotation = (rotation + ROTATION_SPEED * delta) % 360;
 		gl.glRotatef(rotation, 1, 1, 1);

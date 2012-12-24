@@ -21,10 +21,10 @@ public class Planet
 	public Planet()
 	{
 		// Load the sphere model
-		mesh = ObjLoader.loadObj(Gdx.files.internal("models/sphere.obj").read(), true);
+		mesh = ObjLoader.loadObj(Gdx.files.internal("models/planet.obj").read(), true);
 
 		// Load the texture
-		texture = new Texture(Gdx.files.internal("textures/moon.png"));
+		texture = new Texture(Gdx.files.internal("textures/moon_orange.png"));
 
 		// Create our bounding box
 		boundingBox = new BoundingBox();
@@ -36,7 +36,8 @@ public class Planet
 
 	public void render(GL10 gl, float delta)
 	{
-		// Draw the planet
+		gl.glCullFace(GL10.GL_BACK);
+
 		gl.glPushMatrix();
 		rotation = (rotation + ROTATION_SPEED * delta) % 360;
 		gl.glRotatef(rotation, 1, 1, 1);

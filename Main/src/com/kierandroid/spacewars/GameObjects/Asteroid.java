@@ -38,6 +38,8 @@ public class Asteroid
 
 	public void render(GL10 gl, float delta)
 	{
+		gl.glCullFace(GL10.GL_BACK);
+
 		gl.glPushMatrix();
 		orbit = (orbit + ORBIT_SPEED * delta) % 360;
 		gl.glRotatef(orbit, 1, 1, 0);

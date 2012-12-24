@@ -133,23 +133,20 @@ public class GameScreen extends TransitionScreen
 		gl.glClearColor(0, 0, 0, 1.0f);
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		gl.glEnable(GL10.GL_DEPTH_TEST);
+		gl.glEnable(GL10.GL_CULL_FACE);
+		gl.glEnable(GL10.GL_TEXTURE_2D);
 
 		_controller.camera.apply(Gdx.gl10);
 
-		if (_planet != null)
-		{
-			// Bind our planet texture and render the planet
-			gl.glEnable(GL10.GL_TEXTURE_2D);
 
-			_skySphere.render(gl, delta);
-			_planet.render(gl, delta);
-			_asteroid.render(gl, delta);
-
-			gl.glDisable(GL10.GL_TEXTURE_2D);
-		}
+		_skySphere.render(gl, delta);
+		_planet.render(gl, delta);
+		_asteroid.render(gl, delta);
 
 		// Swtich to 2D Mode for drawing of the HUD
 		gl.glDisable(GL10.GL_DEPTH_TEST);
+		gl.glDisable(GL10.GL_CULL_FACE);
+		gl.glDisable(GL10.GL_TEXTURE_2D);
 
 		Gdx.gl10.glMatrixMode(GL10.GL_PROJECTION);
 		Gdx.gl10.glLoadIdentity();
