@@ -20,7 +20,6 @@ import com.kierandroid.spacewars.Utilities.GameState;
 
 public class GameScreen extends TransitionScreen
 {
-	// TEST
 	// Our entry context
 	private EntryPoint _entryPoint;
 
