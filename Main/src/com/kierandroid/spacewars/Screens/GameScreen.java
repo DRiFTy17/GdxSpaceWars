@@ -65,7 +65,7 @@ public class GameScreen extends TransitionScreen
 		// Create the planet
 		_planet = new Planet();
 
-		// Create the skysphere for background
+		// Create the skysphere
 		_skySphere = new SkySphere();
 		_skySphere.mesh.scale(SkySphere.SCALE_FACTOR, SkySphere.SCALE_FACTOR, SkySphere.SCALE_FACTOR);
 
