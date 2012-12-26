@@ -5,10 +5,29 @@ import com.badlogic.gdx.math.Vector3;
 public class MathHelper
 {
 	public static final float PIOVER180 = (float)(Math.PI/180);
+	public static final float PIOVER2 = (float)(Math.PI/2);
 
+	/**
+	 * Makes sure a values doesn't exceed it's minumum or maxiumum values
+	 * @param value The values to check
+	 * @param min The minimum value
+	 * @param max The maxiumum value
+	 * @return
+	 */
 	public static float clamp(float value, float min, float max)
 	{
-		return (value < min) ? min : max;
+		if (value < min)
+		{
+			return min;
+		}
+		else if(value > max)
+		{
+			return max;
+		}
+		else
+		{
+			return value;
+		}
 	}
 
 	public static Vector3 sphericalToCartesian(float radius, float theta, float phi)

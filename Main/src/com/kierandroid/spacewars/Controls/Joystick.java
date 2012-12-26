@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.kierandroid.spacewars.Enumerations.JoystickConfiguration;
 import com.kierandroid.spacewars.Enumerations.State;
+import com.kierandroid.spacewars.Math.MathHelper;
 import com.kierandroid.spacewars.Math.Vector2d;
 import com.kierandroid.spacewars.Utilities.GameState;
 import com.kierandroid.spacewars.Utilities.GameUtils;
@@ -176,98 +177,13 @@ public class Joystick extends Actor
 		return Vector2d.getAngleBetweenTwoPoints(position.X, center.X, position.Y, center.Y);
 	}
 
-	public float getSpeed()
+	public float getPitch()
 	{
-		float distance = (float) (Vector2d.distance(center, position)/100);
-		float speed;
-
-		if (distance < GameUtils.MIN_SPEED)
-		{
-			speed = GameUtils.MIN_SPEED;
-		}
-		else if (distance > GameUtils.MAX_SPEED)
-		{
-			speed = GameUtils.MAX_SPEED;
-		}
-		else
-		{
-			speed = distance;
-		}
-
-		return speed;
+		return MathHelper.clamp((position.X - center.X), -CameraController.CAMERA_SPEED_MAX, CameraController.CAMERA_SPEED_MAX) * MathHelper.PIOVER180;
 	}
 
-	public void updateRotationAxis()
+	public float getYaw()
 	{
-		float xOffset = 0;
-		float yOffset = 0;
-		float angle = getAngle();
-
-		// Determine x offset
-		xOffset = 1f;
-
-		// Determine y offset
-		yOffset = 1f;
-
-		// Determine positive or negative x offset
-		if (angle > 270 || angle < 90)
-		{
-			rotationAxis.X = -xOffset;
-		}
-		else
-		{
-			rotationAxis.X = xOffset;
-		}
-
-		// Determine positive or negative y offset
-		if (angle > 180 && angle < 360)
-		{
-			rotationAxis.Y = -yOffset;
-		}
-		else
-		{
-			rotationAxis.Y = yOffset;
-		}
+		return MathHelper.clamp((position.Y - center.Y), -CameraController.CAMERA_SPEED_MAX, CameraController.CAMERA_SPEED_MAX) * MathHelper.PIOVER180;
 	}
-
-	/*
-	public Vector2d getAxis()
-	{
-		Vector2d axis = new Vector2d(0.0f, 0.0f);
-		float xOffset = 0;
-		float yOffset = 0;
-		float angle = getAngle();
-
-		// Determine x offset
-		xOffset = 1f;
-
-		// Determine y offset
-		yOffset = 1f;
-
-		// Determine positive or negative x offset
-		if (angle > 270 || angle < 90)
-		{
-			axis.X = xOffset;
-			axis.Y = yOffset;
-		}
-		else
-		{
-			axis.X = xOffset;
-			axis.Y = x
-		}
-
-		// Determine positive or negative y offset
-		if (angle > 180 && angle < 360)
-		{
-			// Upper left quadrant
-			axis.Y = -yOffset;
-		}
-		else
-		{
-
-		}
-
-		return axis;
-	}
-	*/
 }

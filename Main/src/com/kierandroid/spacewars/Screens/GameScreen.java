@@ -41,6 +41,9 @@ public class GameScreen extends TransitionScreen
 	// Fonts
 	private BitmapFont _font;
 
+	private float pmouseX = 0.0f;
+	private float pmouseY = 0.0f;
+
 	/**
 	 * Default constructor
 	 * @param entryPoint The handle to our entry context
@@ -135,9 +138,9 @@ public class GameScreen extends TransitionScreen
 		gl.glEnable(GL10.GL_DEPTH_TEST);
 		gl.glEnable(GL10.GL_CULL_FACE);
 		gl.glEnable(GL10.GL_TEXTURE_2D);
+		gl.glShadeModel(GL10.GL_FLAT);
 
 		_controller.camera.apply(Gdx.gl10);
-
 
 		_skySphere.render(gl, delta);
 		_planet.render(gl, delta);
@@ -163,16 +166,17 @@ public class GameScreen extends TransitionScreen
 		{
 			_batch.begin();
 			_font.draw(_batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight() - 10);
+			_font.draw(_batch, "Latitude: " + _joystick.getPitch(), 10, Gdx.graphics.getHeight() - 25);
+			_font.draw(_batch, "Longitude: " + _joystick.getYaw(), 10, Gdx.graphics.getHeight() - 40);
 			_batch.end();
 		}
 
 		if (GameState.currentState == State.Running)
 		{
-			// Move the camera
 			if (_joystick.isTouched)
 			{
-				_joystick.updateRotationAxis();
-				_controller.updateRotation(_joystick.rotationAxis);
+				_controller.rotate(_joystick.getPitch(), _joystick.getYaw(), 0.0f);
+				_controller.update(true);
 			}
 		}
 	}

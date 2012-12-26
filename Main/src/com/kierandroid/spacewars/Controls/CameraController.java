@@ -5,19 +5,21 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import com.kierandroid.spacewars.Math.Vector2d;
 
 public class CameraController
 {
 	// How fast we CAN rotate and move
 	private final float ROTATION_SPEED = 25.23f;
 
+	// Camera constants
+	public static final float CAMERA_DISTANCE = 3.5f;
+	public static final float CAMERA_SPEED_MAX = 75.0f;
+
 	// Camera settings
 	private final float FOV = 45.0f;
 	private final Vector3 LOOK_AT_POINT = new Vector3(0, 0, 0);
 	private final float NEAR = 0.1f;
 	private final float FAR = 100.0f;
-	private final float CAMERA_DISTANCE = 3.5f;
 
 	// The camera we are controlling
 	public PerspectiveCamera camera;
@@ -57,6 +59,7 @@ public class CameraController
 		camera.view.setToLookAt(camera.position, Vector3.tmp.set(camera.position).add(camera.direction), camera.up);
 
 		camera.view.rotate(rotation);
+		camera.lookAt(0, 0, 0);
 
 		// This moves the camera eye/look at point
 		//rotation.transform(camera.direction);
@@ -71,21 +74,6 @@ public class CameraController
 			Matrix4.inv(camera.invProjectionView.val);
 			camera.frustum.update(camera.invProjectionView);
 		}
-	}
-
-	/**
-	 * Updates the rotation quaternion using euler angles
-	 * @param axis
-	 */
-	public void updateRotation(Vector2d axis)
-	{
-		// Update quaternion
-		//newRotation.setFromAxis(Vector3.tmp.set(axisX, axisY, axisZ), ROTATION_SPEED * speed * MathHelper.PIOVER180);
-		newRotation.setEulerAngles(axis.Y, axis.X, 0);
-		//rotation.mul(newRotation);
-		rotation.mulLeft(newRotation);
-
-		update(true);
 	}
 
 	/**
@@ -142,5 +130,11 @@ public class CameraController
 		camera.up.set(right.crs(camera.direction));
 		camera.translate(0, 0, -3);
 		camera.update();
+	}
+
+	public void rotate(float pitch, float yaw, float roll)
+	{
+		newRotation.setEulerAngles(-pitch, -yaw, roll);
+		rotation.mulLeft(newRotation);
 	}
 }
