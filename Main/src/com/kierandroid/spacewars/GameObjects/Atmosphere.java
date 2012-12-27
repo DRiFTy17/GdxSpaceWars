@@ -8,25 +8,23 @@ import com.badlogic.gdx.graphics.g3d.loaders.obj.ObjLoader;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Sphere;
 
-public class Asteroid
+public class Atmosphere
 {
-	public static final float ROTATION_SPEED = 100.0f;
-	public static final float ORBIT_SPEED = 50.0f;
+	public static final float ROTATION_SPEED = 5.0f;
 
 	public float rotation = 0.0f;
-	public float orbit = 0.0f;
 	public BoundingBox boundingBox;
 	public Sphere boundingSphere;
 	public Mesh mesh;
 	public Texture texture;
 
-	public Asteroid()
+	public Atmosphere()
 	{
 		// Load the sphere model
-		mesh = ObjLoader.loadObj(Gdx.files.internal("models/sphere.obj").read(), true);
+		mesh = ObjLoader.loadObj(Gdx.files.internal("models/planet.obj").read(), true);
 
 		// Load the texture
-		texture = new Texture(Gdx.files.internal("textures/moon.png"));
+		texture = new Texture(Gdx.files.internal("textures/atmosphere.png"));
 
 		// Create our bounding box
 		boundingBox = new BoundingBox();
@@ -38,34 +36,23 @@ public class Asteroid
 
 	public void render(GL10 gl, float delta)
 	{
-		//gl.glEnable(GL10.GL_BLEND);
-		//gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		// Turn on blending for our texture
+		gl.glEnable(GL10.GL_BLEND);
+		gl.glBlendFunc(GL10.GL_ONE_MINUS_SRC_ALPHA, GL10.GL_SRC_ALPHA);
 
-		// Don't draw the back faces of this model
 		gl.glCullFace(GL10.GL_BACK);
 
-		// Save the current matrix
 		gl.glPushMatrix();
 
-		// Update the orbit value of this model
-		orbit = (orbit + ORBIT_SPEED * delta) % 360;
-		gl.glRotatef(orbit, 1, 1, 0);
-
-		// Move the model to it's specified radius
-		gl.glTranslatef(0, 0, -1.20f);
-
-		// Spin the model
 		rotation = (rotation + ROTATION_SPEED * delta) % 360;
-		gl.glRotatef(rotation, 1, 1, 1);
+		gl.glRotatef(rotation, -1, -1, -1);
 
-		// Bind the texture and draw
 		texture.bind();
 		mesh.render(GL10.GL_TRIANGLES);
 
-		// Restore the matrix
 		gl.glPopMatrix();
 
-		//gl.glDisable(GL10.GL_BLEND);
+		gl.glDisable(GL10.GL_BLEND);
 	}
 
 	public void dispose()

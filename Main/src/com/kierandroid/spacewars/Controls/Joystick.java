@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.kierandroid.spacewars.Enumerations.JoystickConfiguration;
+import com.kierandroid.spacewars.Enumerations.ControlsConfiguration;
 import com.kierandroid.spacewars.Enumerations.State;
 import com.kierandroid.spacewars.Math.MathHelper;
 import com.kierandroid.spacewars.Math.Vector2d;
@@ -29,7 +29,7 @@ public class Joystick extends Actor
 	public Vector2d position;
 	public Vector2d rotationAxis;
 	
-	public Joystick(JoystickConfiguration configuration)
+	public Joystick(ControlsConfiguration configuration)
 	{
 		this.setTouchable(Touchable.enabled);
 
@@ -52,7 +52,7 @@ public class Joystick extends Actor
 		boundingBox.width = backgroundSprite.getWidth();
 		boundingBox.height = backgroundSprite.getHeight();
 
-		if (configuration == JoystickConfiguration.Left)
+		if (configuration == ControlsConfiguration.Default)
 		{
 			boundingBox.x = 0;
 		}

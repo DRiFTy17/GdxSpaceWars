@@ -13,7 +13,7 @@ public class CameraController
 
 	// Camera constants
 	public static final float CAMERA_DISTANCE = 3.5f;
-	public static final float CAMERA_SPEED_MAX = 75.0f;
+	public static final float CAMERA_SPEED_MAX = 50.0f;
 
 	// Camera settings
 	private final float FOV = 45.0f;

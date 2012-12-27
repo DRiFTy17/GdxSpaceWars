@@ -9,11 +9,13 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.kierandroid.spacewars.Controls.CameraController;
+import com.kierandroid.spacewars.Controls.FireButton;
 import com.kierandroid.spacewars.Controls.Joystick;
 import com.kierandroid.spacewars.EntryPoint;
-import com.kierandroid.spacewars.Enumerations.JoystickConfiguration;
+import com.kierandroid.spacewars.Enumerations.ControlsConfiguration;
 import com.kierandroid.spacewars.Enumerations.State;
 import com.kierandroid.spacewars.GameObjects.Asteroid;
+import com.kierandroid.spacewars.GameObjects.Atmosphere;
 import com.kierandroid.spacewars.GameObjects.Planet;
 import com.kierandroid.spacewars.GameObjects.SkySphere;
 import com.kierandroid.spacewars.Utilities.GameState;
@@ -25,11 +27,13 @@ public class GameScreen extends TransitionScreen
 
 	// 3D Game Objects
 	private Planet _planet;
+	private Atmosphere _atmosphere;
 	private SkySphere _skySphere;
 	private Asteroid _asteroid;
 
 	// Actors
 	Joystick _joystick;
+	FireButton _fireButton;
 
 	// Renderers
 	private SpriteBatch _batch;
@@ -41,8 +45,7 @@ public class GameScreen extends TransitionScreen
 	// Fonts
 	private BitmapFont _font;
 
-	private float pmouseX = 0.0f;
-	private float pmouseY = 0.0f;
+	private ControlsConfiguration _controlsConfiguration;
 
 	/**
 	 * Default constructor
@@ -65,8 +68,14 @@ public class GameScreen extends TransitionScreen
 		// Turn debugging on or off
 		GameState.DEBUG = true;
 
+		// Set the default controls configuration
+		_controlsConfiguration = ControlsConfiguration.Default;
+
 		// Create the planet
 		_planet = new Planet();
+
+		_atmosphere = new Atmosphere();
+		_atmosphere.mesh.scale(1.1f, 1.1f, 1.1f);
 
 		// Create the skysphere
 		_skySphere = new SkySphere();
@@ -104,7 +113,7 @@ public class GameScreen extends TransitionScreen
 	 */
 	private void setActors()
 	{
-		_joystick = new Joystick(JoystickConfiguration.Left);
+		_joystick = new Joystick(_controlsConfiguration);
 		_joystick.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				_joystick.touchDown(x, y);
@@ -120,7 +129,23 @@ public class GameScreen extends TransitionScreen
 			}
 		});
 
+		_fireButton = new FireButton(_controlsConfiguration);
+		//_fireButton.setPositionY(_joystick.center.Y);
+		_fireButton.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
+			{
+				_fireButton.touchDown(x, y);
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button)
+			{
+				_fireButton.touchUp(x, y);
+			}
+		});
+
 		_stage.addActor(_joystick);
+		_stage.addActor(_fireButton);
 	}
 
 	/**
@@ -144,6 +169,7 @@ public class GameScreen extends TransitionScreen
 
 		_skySphere.render(gl, delta);
 		_planet.render(gl, delta);
+		_atmosphere.render(gl, delta);
 		_asteroid.render(gl, delta);
 
 		// Swtich to 2D Mode for drawing of the HUD
@@ -166,8 +192,6 @@ public class GameScreen extends TransitionScreen
 		{
 			_batch.begin();
 			_font.draw(_batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight() - 10);
-			_font.draw(_batch, "Latitude: " + _joystick.getPitch(), 10, Gdx.graphics.getHeight() - 25);
-			_font.draw(_batch, "Longitude: " + _joystick.getYaw(), 10, Gdx.graphics.getHeight() - 40);
 			_batch.end();
 		}
 
@@ -221,7 +245,10 @@ public class GameScreen extends TransitionScreen
 	public void dispose()
 	{
 		_stage.dispose();
-		_planet.texture.dispose();
-		_skySphere.texture.dispose();
+
+		_planet.dispose();
+		_atmosphere.dispose();
+		_asteroid.dispose();
+		_skySphere.dispose();
 	}
 }

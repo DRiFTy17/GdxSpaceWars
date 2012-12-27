@@ -21,7 +21,7 @@ public class SkySphere
 		mesh = ObjLoader.loadObj(Gdx.files.internal("models/sphere.obj").read(), true);
 
 		// Load the texture
-		texture = new Texture(Gdx.files.internal("textures/space.png"));
+		texture = new Texture(Gdx.files.internal("textures/skysphere.png"));
 	}
 
 	public void render(GL10 gl, float delta)
@@ -34,5 +34,11 @@ public class SkySphere
 		texture.bind();
 		mesh.render(GL10.GL_TRIANGLES);
 		gl.glPopMatrix();
+	}
+
+	public void dispose()
+	{
+		texture.dispose();
+		mesh.dispose();
 	}
 }

@@ -36,13 +36,26 @@ public class Planet
 
 	public void render(GL10 gl, float delta)
 	{
+		//gl.glEnable(GL10.GL_BLEND);
+		//gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+
 		gl.glCullFace(GL10.GL_BACK);
 
 		gl.glPushMatrix();
+
 		rotation = (rotation + ROTATION_SPEED * delta) % 360;
 		gl.glRotatef(rotation, 1, 1, 1);
 		texture.bind();
 		mesh.render(GL10.GL_TRIANGLES);
+
 		gl.glPopMatrix();
+
+		//gl.glDisable(GL10.GL_BLEND);
+	}
+
+	public void dispose()
+	{
+		texture.dispose();
+		mesh.dispose();
 	}
 }
