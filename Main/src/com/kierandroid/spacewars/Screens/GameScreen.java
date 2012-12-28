@@ -2,7 +2,7 @@ package com.kierandroid.spacewars.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -22,9 +22,6 @@ import com.kierandroid.spacewars.Utilities.GameState;
 
 public class GameScreen extends TransitionScreen
 {
-	// Our entry context
-	private EntryPoint _entryPoint;
-
 	// 3D Game Objects
 	private Planet _planet;
 	private Atmosphere _atmosphere;
@@ -54,9 +51,6 @@ public class GameScreen extends TransitionScreen
 	public GameScreen(EntryPoint entryPoint)
 	{
 		super(entryPoint);
-
-		// Our reference to the entry point class
-		this._entryPoint = entryPoint;
 	}
 
 	/**
@@ -71,19 +65,10 @@ public class GameScreen extends TransitionScreen
 		// Set the default controls configuration
 		_controlsConfiguration = ControlsConfiguration.Default;
 
-		// Create the planet
-		_planet = new Planet();
-
-		_atmosphere = new Atmosphere();
-		_atmosphere.mesh.scale(1.1f, 1.1f, 1.1f);
-
-		// Create the skysphere
-		_skySphere = new SkySphere();
-		_skySphere.mesh.scale(SkySphere.SCALE_FACTOR, SkySphere.SCALE_FACTOR, SkySphere.SCALE_FACTOR);
-
-		// Create the asteroid
-		_asteroid = new Asteroid();
-		_asteroid.mesh.scale(0.1f, 0.1f, 0.1f);
+		_planet = new Planet(game, "models/planet.obj", "textures/moon_orange.png");
+		_atmosphere = new Atmosphere(game, "models/planet.obj", "textures/atmosphere.png");
+		_skySphere = new SkySphere(game, "models/planet.obj", "textures/skysphere.png");
+		_asteroid = new Asteroid(game,"models/planet.obj", "textures/moon.png", 45, 45);
 
 		// Set up our camera _controller
 		_controller = new CameraController();
@@ -113,7 +98,7 @@ public class GameScreen extends TransitionScreen
 	 */
 	private void setActors()
 	{
-		_joystick = new Joystick(_controlsConfiguration);
+		_joystick = new Joystick(game, _controlsConfiguration);
 		_joystick.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				_joystick.touchDown(x, y);
@@ -129,7 +114,7 @@ public class GameScreen extends TransitionScreen
 			}
 		});
 
-		_fireButton = new FireButton(_controlsConfiguration);
+		_fireButton = new FireButton(game, _controlsConfiguration);
 		//_fireButton.setPositionY(_joystick.center.Y);
 		_fireButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
@@ -155,17 +140,16 @@ public class GameScreen extends TransitionScreen
 	@Override
 	public void renderScreen(float delta)
 	{
-		GL10 gl = Gdx.app.getGraphics().getGL10();
+		GL11 gl = Gdx.app.getGraphics().getGL11();
 
-		// Draw a black background and clear the screen
 		gl.glClearColor(0, 0, 0, 1.0f);
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-		gl.glEnable(GL10.GL_DEPTH_TEST);
-		gl.glEnable(GL10.GL_CULL_FACE);
-		gl.glEnable(GL10.GL_TEXTURE_2D);
-		gl.glShadeModel(GL10.GL_FLAT);
+		gl.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		gl.glEnable(GL11.GL_DEPTH_TEST);
+		gl.glEnable(GL11.GL_CULL_FACE);
+		gl.glEnable(GL11.GL_TEXTURE_2D);
+		gl.glShadeModel(GL11.GL_FLAT);
 
-		_controller.camera.apply(Gdx.gl10);
+		_controller.camera.apply(Gdx.gl11);
 
 		_skySphere.render(gl, delta);
 		_planet.render(gl, delta);
@@ -173,15 +157,15 @@ public class GameScreen extends TransitionScreen
 		_asteroid.render(gl, delta);
 
 		// Swtich to 2D Mode for drawing of the HUD
-		gl.glDisable(GL10.GL_DEPTH_TEST);
-		gl.glDisable(GL10.GL_CULL_FACE);
-		gl.glDisable(GL10.GL_TEXTURE_2D);
+		gl.glDisable(GL11.GL_DEPTH_TEST);
+		gl.glDisable(GL11.GL_CULL_FACE);
+		gl.glDisable(GL11.GL_TEXTURE_2D);
 
-		Gdx.gl10.glMatrixMode(GL10.GL_PROJECTION);
-		Gdx.gl10.glLoadIdentity();
-		Gdx.gl10.glOrthof(0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0, -1, 1);
-		Gdx.gl10.glMatrixMode(GL10.GL_MODELVIEW);
-		Gdx.gl10.glLoadIdentity();
+		gl.glMatrixMode(GL11.GL_PROJECTION);
+		gl.glLoadIdentity();
+		gl.glOrthof(0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0, -1, 1);
+		gl.glMatrixMode(GL11.GL_MODELVIEW);
+		gl.glLoadIdentity();
 
 		// Act and draw the _stage
 		_stage.act(delta);
@@ -192,6 +176,7 @@ public class GameScreen extends TransitionScreen
 		{
 			_batch.begin();
 			_font.draw(_batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight() - 10);
+			_font.draw(_batch, "Position: " + _asteroid.position, 10, Gdx.graphics.getHeight() - 25);
 			_batch.end();
 		}
 

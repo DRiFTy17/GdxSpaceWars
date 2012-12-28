@@ -4,10 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.kierandroid.spacewars.EntryPoint;
 import com.kierandroid.spacewars.Enumerations.ControlsConfiguration;
 import com.kierandroid.spacewars.Enumerations.State;
 import com.kierandroid.spacewars.Utilities.GameState;
@@ -15,6 +15,8 @@ import com.kierandroid.spacewars.Utilities.GameUtils;
 
 public class FireButton extends Actor
 {
+	private EntryPoint game;
+
 	private Sprite buttonNormal;
 	private Sprite buttonPressed;
 	private Rectangle boundingBox;
@@ -24,13 +26,17 @@ public class FireButton extends Actor
 	private float positionX;
 	private float positionY;
 
-	public FireButton(ControlsConfiguration configuration)
+	public FireButton(EntryPoint game, ControlsConfiguration configuration)
 	{
+		this.game = game;
+
 		this.setTouchable(Touchable.enabled);
 
 		// Set sprites
-		buttonNormal = new Sprite(new TextureRegion(new Texture(Gdx.files.internal("images/fire_button.png"))));
-		buttonPressed = new Sprite(new TextureRegion(new Texture(Gdx.files.internal("images/fire_button_pressed.png"))));
+		//buttonNormal = new Sprite(new TextureRegion(new Texture(Gdx.files.internal("images/fire_button.png"))));
+		buttonNormal = new Sprite(game.assets.get("images/fire_button.png", Texture.class));
+		//buttonPressed = new Sprite(new TextureRegion(new Texture(Gdx.files.internal("images/fire_button_pressed.png"))));
+		buttonPressed = new Sprite(game.assets.get("images/fire_button_pressed.png", Texture.class));
 
 		// Resize
 		GameUtils.resize(buttonNormal);

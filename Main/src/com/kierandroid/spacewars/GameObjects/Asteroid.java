@@ -1,43 +1,33 @@
 package com.kierandroid.spacewars.GameObjects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g3d.loaders.obj.ObjLoader;
-import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.math.collision.Sphere;
+import com.badlogic.gdx.graphics.GL11;
+import com.kierandroid.spacewars.EntryPoint;
+import com.kierandroid.spacewars.Math.MathHelper;
+import com.kierandroid.spacewars.Utilities.GameState;
 
-public class Asteroid
+public class Asteroid extends AbstractGameObject
 {
 	public static final float ROTATION_SPEED = 100.0f;
-	public static final float ORBIT_SPEED = 50.0f;
+	public static final float ORBIT_SPEED = 5.0f;
+	public static final float ORBIT_DISTANCE = 1.20f;
+	public static final float SCALE_FACTOR = 0.1f;
 
-	public float rotation = 0.0f;
-	public float orbit = 0.0f;
-	public BoundingBox boundingBox;
-	public Sphere boundingSphere;
-	public Mesh mesh;
-	public Texture texture;
-
-	public Asteroid()
+	public Asteroid(EntryPoint game, String modelPath, String texturePath, float pitch, float yaw)
 	{
-		// Load the sphere model
-		mesh = ObjLoader.loadObj(Gdx.files.internal("models/sphere.obj").read(), true);
+		super(game, modelPath, texturePath, SCALE_FACTOR);
 
-		// Load the texture
-		texture = new Texture(Gdx.files.internal("textures/moon.png"));
-
-		// Create our bounding box
-		boundingBox = new BoundingBox();
-		boundingBox.set(mesh.calculateBoundingBox());
-
-		// Create our bounding sphere
-		boundingSphere = new Sphere(boundingBox.getCenter(), boundingBox.getDimensions().len()/2);
+		this.pitch = pitch* MathHelper.PIOVER180;
+		this.yaw = yaw*MathHelper.PIOVER180;
 	}
 
-	public void render(GL10 gl, float delta)
+	@Override
+	public void render(GL11 gl, float delta)
 	{
+		newRotation.setEulerAngles(pitch, yaw, roll);
+		rotation.mulLeft(newRotation);
+		//newRotation.toMatrix(rotationMatrix);
+
 		//gl.glEnable(GL10.GL_BLEND);
 		//gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -49,14 +39,31 @@ public class Asteroid
 
 		// Update the orbit value of this model
 		orbit = (orbit + ORBIT_SPEED * delta) % 360;
-		gl.glRotatef(orbit, 1, 1, 0);
+		gl.glRotatef(orbit, 1.0f, 1.0f, 0);
+
+		newPosition.idt();
+		newPosition.rotate(1.0f, 1.0f, 0, orbit);
+		//position.rotate(1.0f, 1.0f, 0, orbit);
+		//position.mul(newPosition);
+
+		//gl.glMatrixMode(GL10.GL_MODELVIEW);
+		//gl.glMultMatrixf(rotationMatrix, 0);
 
 		// Move the model to it's specified radius
-		gl.glTranslatef(0, 0, -1.20f);
+		gl.glTranslatef(0, 0, -ORBIT_DISTANCE);
+
+		newPosition.translate(0, 0, -ORBIT_DISTANCE);
+
+		position.mul(newPosition);
+
+		if (GameState.DEBUG)
+		{
+			renderBoundingBox(gl, delta);
+		}
 
 		// Spin the model
-		rotation = (rotation + ROTATION_SPEED * delta) % 360;
-		gl.glRotatef(rotation, 1, 1, 1);
+		localRotation = (localRotation + ROTATION_SPEED * delta) % 360;
+		gl.glRotatef(localRotation, 1, 1, 1);
 
 		// Bind the texture and draw
 		texture.bind();
@@ -68,6 +75,7 @@ public class Asteroid
 		//gl.glDisable(GL10.GL_BLEND);
 	}
 
+	@Override
 	public void dispose()
 	{
 		texture.dispose();

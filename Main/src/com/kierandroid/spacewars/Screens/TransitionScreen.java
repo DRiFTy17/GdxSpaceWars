@@ -2,7 +2,7 @@ package com.kierandroid.spacewars.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -69,7 +69,7 @@ public abstract class TransitionScreen implements Screen {
       if (delta > 0.1f)
          delta = 0.1f;
       
-      Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+      Gdx.gl.glClear(GL11.GL_COLOR_BUFFER_BIT);
       
       renderScreen(delta);
       

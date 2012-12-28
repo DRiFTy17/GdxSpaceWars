@@ -1,40 +1,21 @@
 package com.kierandroid.spacewars.GameObjects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g3d.loaders.obj.ObjLoader;
-import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.math.collision.Sphere;
+import com.badlogic.gdx.graphics.GL11;
+import com.kierandroid.spacewars.EntryPoint;
 
-public class Atmosphere
+public class Atmosphere extends AbstractGameObject
 {
 	public static final float ROTATION_SPEED = 5.0f;
+	public static final float SCALE_FACTOR = 1.1f;
 
-	public float rotation = 0.0f;
-	public BoundingBox boundingBox;
-	public Sphere boundingSphere;
-	public Mesh mesh;
-	public Texture texture;
-
-	public Atmosphere()
+	public Atmosphere(EntryPoint game, String modelPath, String texturePath)
 	{
-		// Load the sphere model
-		mesh = ObjLoader.loadObj(Gdx.files.internal("models/planet.obj").read(), true);
-
-		// Load the texture
-		texture = new Texture(Gdx.files.internal("textures/atmosphere.png"));
-
-		// Create our bounding box
-		boundingBox = new BoundingBox();
-		boundingBox.set(mesh.calculateBoundingBox());
-
-		// Create our bounding sphere
-		boundingSphere = new Sphere(boundingBox.getCenter(), boundingBox.getDimensions().len()/2);
+		super(game, modelPath, texturePath, SCALE_FACTOR);
 	}
 
-	public void render(GL10 gl, float delta)
+	@Override
+	public void render(GL11 gl, float delta)
 	{
 		// Turn on blending for our texture
 		gl.glEnable(GL10.GL_BLEND);
@@ -44,17 +25,20 @@ public class Atmosphere
 
 		gl.glPushMatrix();
 
-		rotation = (rotation + ROTATION_SPEED * delta) % 360;
-		gl.glRotatef(rotation, -1, -1, -1);
+		localRotation = (localRotation + ROTATION_SPEED * delta) % 360;
+		gl.glRotatef(localRotation, -1, -1, -1);
 
+		//gl.glColor4f(0.52f, 0.84f, 0.98f, 1);
 		texture.bind();
 		mesh.render(GL10.GL_TRIANGLES);
+		//gl.glColor4f(1, 1, 1, 1);
 
 		gl.glPopMatrix();
 
 		gl.glDisable(GL10.GL_BLEND);
 	}
 
+	@Override
 	public void dispose()
 	{
 		texture.dispose();
