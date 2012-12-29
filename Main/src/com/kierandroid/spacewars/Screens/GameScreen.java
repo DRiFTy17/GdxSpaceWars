@@ -27,6 +27,7 @@ public class GameScreen extends TransitionScreen
 	private Atmosphere _atmosphere;
 	private SkySphere _skySphere;
 	private Asteroid _asteroid;
+	private Asteroid _asteroid2;
 
 	// Actors
 	Joystick _joystick;
@@ -68,7 +69,8 @@ public class GameScreen extends TransitionScreen
 		_planet = new Planet(game, "models/planet.obj", "textures/moon_orange.png");
 		_atmosphere = new Atmosphere(game, "models/planet.obj", "textures/atmosphere.png");
 		_skySphere = new SkySphere(game, "models/planet.obj", "textures/skysphere.png");
-		_asteroid = new Asteroid(game,"models/planet.obj", "textures/moon.png", 45, 45);
+		_asteroid = new Asteroid(game,"models/planet.obj", "textures/moon.png", true);
+		_asteroid2 = new Asteroid(game,"models/planet.obj", "textures/moon.png", false);
 
 		// Set up our camera _controller
 		_controller = new CameraController();
@@ -155,6 +157,7 @@ public class GameScreen extends TransitionScreen
 		_planet.render(gl, delta);
 		_atmosphere.render(gl, delta);
 		_asteroid.render(gl, delta);
+		_asteroid2.render(gl, delta);
 
 		// Swtich to 2D Mode for drawing of the HUD
 		gl.glDisable(GL11.GL_DEPTH_TEST);
@@ -176,7 +179,7 @@ public class GameScreen extends TransitionScreen
 		{
 			_batch.begin();
 			_font.draw(_batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight() - 10);
-			_font.draw(_batch, "Position: " + _asteroid.position, 10, Gdx.graphics.getHeight() - 25);
+			_font.draw(_batch, "Collision: " + _asteroid.boundingSphere.overlaps(_asteroid2.boundingSphere), 10, Gdx.graphics.getHeight() - 25);
 			_batch.end();
 		}
 

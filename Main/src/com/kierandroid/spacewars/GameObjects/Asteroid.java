@@ -9,16 +9,20 @@ import com.kierandroid.spacewars.Utilities.GameState;
 public class Asteroid extends AbstractGameObject
 {
 	public static final float ROTATION_SPEED = 100.0f;
-	public static final float ORBIT_SPEED = 5.0f;
+	public static final float ORBIT_SPEED = 25.0f;
 	public static final float ORBIT_DISTANCE = 1.20f;
 	public static final float SCALE_FACTOR = 0.1f;
 
-	public Asteroid(EntryPoint game, String modelPath, String texturePath, float pitch, float yaw)
+	public boolean which;
+
+	public Asteroid(EntryPoint game, String modelPath, String texturePath, boolean which)
 	{
 		super(game, modelPath, texturePath, SCALE_FACTOR);
 
-		this.pitch = pitch* MathHelper.PIOVER180;
-		this.yaw = yaw*MathHelper.PIOVER180;
+		this.pitch = 45* MathHelper.PIOVER180;
+		this.yaw = 45* MathHelper.PIOVER180;
+
+		this.which = which;
 	}
 
 	@Override
@@ -26,7 +30,7 @@ public class Asteroid extends AbstractGameObject
 	{
 		newRotation.setEulerAngles(pitch, yaw, roll);
 		rotation.mulLeft(newRotation);
-		//newRotation.toMatrix(rotationMatrix);
+		newRotation.toMatrix(rotationMatrix);
 
 		//gl.glEnable(GL10.GL_BLEND);
 		//gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
@@ -37,14 +41,21 @@ public class Asteroid extends AbstractGameObject
 		// Save the current matrix
 		gl.glPushMatrix();
 
+		position.idt();
+
 		// Update the orbit value of this model
 		orbit = (orbit + ORBIT_SPEED * delta) % 360;
-		gl.glRotatef(orbit, 1.0f, 1.0f, 0);
 
-		newPosition.idt();
-		newPosition.rotate(1.0f, 1.0f, 0, orbit);
-		//position.rotate(1.0f, 1.0f, 0, orbit);
-		//position.mul(newPosition);
+		if (which)
+		{
+			gl.glRotatef(orbit, 1.0f, 1.0f, 0);
+			position.rotate(1.0f, 1.0f, 0, orbit);
+		}
+		else
+		{
+			gl.glRotatef(orbit, -1.0f, 1.0f, 0);
+			position.rotate(-1.0f, 1.0f, 0, orbit);
+		}
 
 		//gl.glMatrixMode(GL10.GL_MODELVIEW);
 		//gl.glMultMatrixf(rotationMatrix, 0);
@@ -52,18 +63,23 @@ public class Asteroid extends AbstractGameObject
 		// Move the model to it's specified radius
 		gl.glTranslatef(0, 0, -ORBIT_DISTANCE);
 
-		newPosition.translate(0, 0, -ORBIT_DISTANCE);
+		position.translate(0, 0, -ORBIT_DISTANCE);
+//		boundingBox.mul(position);
 
-		position.mul(newPosition);
+		// Spin the model
+		localRotation = (localRotation + ROTATION_SPEED * delta) % 360;
+		gl.glRotatef(localRotation, 1, 1, 1);
+
+		position.rotate(1.0f, 1.0f, 1.0f, localRotation);
+
+		boundingSphere.center.x = getX();
+		boundingSphere.center.y = getY();
+		boundingSphere.center.z = getZ();
 
 		if (GameState.DEBUG)
 		{
 			renderBoundingBox(gl, delta);
 		}
-
-		// Spin the model
-		localRotation = (localRotation + ROTATION_SPEED * delta) % 360;
-		gl.glRotatef(localRotation, 1, 1, 1);
 
 		// Bind the texture and draw
 		texture.bind();

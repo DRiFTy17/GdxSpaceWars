@@ -4,31 +4,28 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer10;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.math.collision.Sphere;
 import com.kierandroid.spacewars.EntryPoint;
+import com.kierandroid.spacewars.Utilities.BoundingSphere;
 import com.kierandroid.spacewars.Utilities.MeshLoaderResult;
 
 public abstract class AbstractGameObject
 {
 	protected EntryPoint game;
 	protected ImmediateModeRenderer10 renderer;
-	protected BoundingBox boundingBox;
-	protected Sphere boundingSphere;
+	public BoundingBox boundingBox;
+	public BoundingSphere boundingSphere;
 	protected Mesh mesh;
 	protected Texture texture;
 	protected float pitch;
 	protected float yaw;
 	protected float roll;
-	protected Quaternion rotation;
+	public Quaternion rotation;
 	protected Quaternion newRotation;
 	protected float[] rotationMatrix;
 	public float localRotation = 0.0f;
 	public float orbit = 0.0f;
 	public Matrix4 position;
-	public Matrix4 newPosition;
-	public Vector3 vectorPosition;
 
 	public AbstractGameObject(EntryPoint game, String modelPath, String texturePath, float scaleFactor)
 	{
@@ -51,7 +48,7 @@ public abstract class AbstractGameObject
 		boundingBox.set(mesh.calculateBoundingBox());
 
 		// Create our bounding sphere
-		boundingSphere = new Sphere(boundingBox.getCenter(), boundingBox.getDimensions().len()/2);
+		boundingSphere = new BoundingSphere(boundingBox.getCenter(), boundingBox.getDimensions().len()/2);
 
 		renderer = new ImmediateModeRenderer10();
 
@@ -60,8 +57,6 @@ public abstract class AbstractGameObject
 		rotationMatrix = new float[16];
 
 		position = new Matrix4();
-		newPosition = new Matrix4();
-		vectorPosition = new Vector3();
 	}
 
 	public abstract void render(GL11 gl, float delta);
@@ -102,5 +97,20 @@ public abstract class AbstractGameObject
 		renderer.vertex(boundingBox.getCorners()[2]);
 		renderer.end();
 		gl.glColor4f(1, 1, 1, 1);
+	}
+
+	public float getX()
+	{
+		return position.getValues()[12];
+	}
+
+	public float getY()
+	{
+		return position.getValues()[13];
+	}
+
+	public float getZ()
+	{
+		return position.getValues()[14];
 	}
 }
