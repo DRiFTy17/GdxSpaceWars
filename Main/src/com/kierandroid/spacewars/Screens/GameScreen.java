@@ -9,15 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.kierandroid.spacewars.Controls.CameraController;
-import com.kierandroid.spacewars.Controls.FireButton;
 import com.kierandroid.spacewars.Controls.Joystick;
 import com.kierandroid.spacewars.EntryPoint;
-import com.kierandroid.spacewars.Enumerations.ControlsConfiguration;
+import com.kierandroid.spacewars.Enumerations.JoystickConfiguration;
 import com.kierandroid.spacewars.Enumerations.State;
-import com.kierandroid.spacewars.GameObjects.Asteroid;
-import com.kierandroid.spacewars.GameObjects.Atmosphere;
-import com.kierandroid.spacewars.GameObjects.Planet;
-import com.kierandroid.spacewars.GameObjects.SkySphere;
+import com.kierandroid.spacewars.GameObjects.*;
 import com.kierandroid.spacewars.Utilities.GameState;
 
 public class GameScreen extends TransitionScreen
@@ -28,10 +24,12 @@ public class GameScreen extends TransitionScreen
 	private SkySphere _skySphere;
 	private Asteroid _asteroid;
 	private Asteroid _asteroid2;
+	private Ship _ship;
 
 	// Actors
-	Joystick _joystick;
-	FireButton _fireButton;
+	Joystick _moveJoystick;
+	Joystick _aimJoystick;
+//	FireButton _fireButton;
 
 	// Renderers
 	private SpriteBatch _batch;
@@ -43,10 +41,8 @@ public class GameScreen extends TransitionScreen
 	// Fonts
 	private BitmapFont _font;
 
-	private ControlsConfiguration _controlsConfiguration;
-
 	/**
-	 * Default constructor
+	 * Left constructor
 	 * @param entryPoint The handle to our entry context
 	 */
 	public GameScreen(EntryPoint entryPoint)
@@ -63,14 +59,12 @@ public class GameScreen extends TransitionScreen
 		// Turn debugging on or off
 		GameState.DEBUG = true;
 
-		// Set the default controls configuration
-		_controlsConfiguration = ControlsConfiguration.Default;
-
 		_planet = new Planet(game, "models/planet.obj", "textures/moon_orange.png");
 		_atmosphere = new Atmosphere(game, "models/planet.obj", "textures/atmosphere.png");
 		_skySphere = new SkySphere(game, "models/planet.obj", "textures/skysphere.png");
 		_asteroid = new Asteroid(game,"models/planet.obj", "textures/moon.png", true);
 		_asteroid2 = new Asteroid(game,"models/planet.obj", "textures/moon.png", false);
+		_ship = new Ship(game, "models/planet.obj", "textures/moon.png");
 
 		// Set up our camera _controller
 		_controller = new CameraController();
@@ -100,24 +94,41 @@ public class GameScreen extends TransitionScreen
 	 */
 	private void setActors()
 	{
-		_joystick = new Joystick(game, _controlsConfiguration);
-		_joystick.addListener(new InputListener() {
+		_moveJoystick = new Joystick(game, JoystickConfiguration.Left, "images/joystick_background.png", "images/joystick.png");
+		_moveJoystick.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				_joystick.touchDown(x, y);
+				_moveJoystick.touchDown(x, y);
 				return true;
 			}
 
 			public void touchDragged(InputEvent event, float x, float y, int pointer) {
-				_joystick.touchDragged(x, y);
+				_moveJoystick.touchDragged(x, y);
 			}
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				_joystick.touchUp(x, y);
+				_moveJoystick.touchUp(x, y);
 			}
 		});
 
-		_fireButton = new FireButton(game, _controlsConfiguration);
-		//_fireButton.setPositionY(_joystick.center.Y);
+		_aimJoystick = new Joystick(game, JoystickConfiguration.Right, "images/joystick_background.png", "images/joystick_red.png");
+		_aimJoystick.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				_aimJoystick.touchDown(x, y);
+				return true;
+			}
+
+			public void touchDragged(InputEvent event, float x, float y, int pointer) {
+				_aimJoystick.touchDragged(x, y);
+			}
+
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				_aimJoystick.touchUp(x, y);
+			}
+		});
+
+/*
+		_fireButton = new FireButton(game, JoystickConfiguration.Left);
+		//_fireButton.setPositionY(_moveJoystick.center.Y);
 		_fireButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
 			{
@@ -130,9 +141,11 @@ public class GameScreen extends TransitionScreen
 				_fireButton.touchUp(x, y);
 			}
 		});
+*/
 
-		_stage.addActor(_joystick);
-		_stage.addActor(_fireButton);
+		_stage.addActor(_moveJoystick);
+		_stage.addActor(_aimJoystick);
+//		_stage.addActor(_fireButton);
 	}
 
 	/**
@@ -156,6 +169,7 @@ public class GameScreen extends TransitionScreen
 		_skySphere.render(gl, delta);
 		_planet.render(gl, delta);
 		_atmosphere.render(gl, delta);
+		_ship.render(gl, delta);
 		_asteroid.render(gl, delta);
 		_asteroid2.render(gl, delta);
 
@@ -179,16 +193,29 @@ public class GameScreen extends TransitionScreen
 		{
 			_batch.begin();
 			_font.draw(_batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight() - 10);
-			_font.draw(_batch, "Collision: " + _asteroid.boundingSphere.overlaps(_asteroid2.boundingSphere), 10, Gdx.graphics.getHeight() - 25);
 			_batch.end();
 		}
 
 		if (GameState.currentState == State.Running)
 		{
-			if (_joystick.isTouched)
+			if (_moveJoystick.isTouched)
 			{
-				_controller.rotate(_joystick.getPitch(), _joystick.getYaw(), 0.0f);
+				_controller.rotate(_moveJoystick.getPitch(), _moveJoystick.getYaw(), 0.0f);
 				_controller.update(true);
+
+				_ship.update(_controller.rotation, _moveJoystick.getAngle());
+			}
+			else if(_controller.isMoving)
+			{
+				_controller.decay();
+				_controller.update(true);
+
+				_ship.update(_controller.rotation, _moveJoystick.getAngle());
+			}
+
+			if (_aimJoystick.isTouched)
+			{
+
 			}
 		}
 	}

@@ -40,8 +40,11 @@ public abstract class AbstractGameObject
 			mesh.scale(scaleFactor, scaleFactor, scaleFactor);
 		}
 
-		// Load the texture
-		texture = game.assets.get(texturePath);
+		if (texturePath != null)
+		{
+			// Load the texture
+			texture = game.assets.get(texturePath);
+		}
 
 		// Create our bounding box
 		boundingBox = new BoundingBox();
@@ -57,6 +60,7 @@ public abstract class AbstractGameObject
 		rotationMatrix = new float[16];
 
 		position = new Matrix4();
+		rotation.toMatrix(rotationMatrix);
 	}
 
 	public abstract void render(GL11 gl, float delta);

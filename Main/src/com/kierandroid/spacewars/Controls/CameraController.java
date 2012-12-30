@@ -14,12 +14,19 @@ public class CameraController
 	// Camera constants
 	public static final float CAMERA_DISTANCE = 3.5f;
 	public static final float CAMERA_SPEED_MAX = 50.0f;
+	public static final float DECAY_FACTOR = 0.985f;
+	public static final float MIN_SPEED_THRESHOLD = 0.1f;
+	public static final float DECEL_FACTOR = 0.95f;
 
 	// Camera settings
 	private final float FOV = 45.0f;
 	private final Vector3 LOOK_AT_POINT = new Vector3(0, 0, 0);
 	private final float NEAR = 0.1f;
 	private final float FAR = 100.0f;
+
+	private float pitchSpeed;
+	private float yawSpeed;
+	public boolean isMoving;
 
 	// The camera we are controlling
 	public PerspectiveCamera camera;
@@ -134,7 +141,28 @@ public class CameraController
 
 	public void rotate(float pitch, float yaw, float roll)
 	{
+		isMoving = (Math.abs(pitch) != 0 || Math.abs(yaw) != 0) ? true : false;
+
+		pitchSpeed = pitch;
+		yawSpeed = yaw;
+
 		newRotation.setEulerAngles(-pitch, -yaw, roll);
 		rotation.mulLeft(newRotation);
+	}
+
+	public void decay()
+	{
+		pitchSpeed *= DECAY_FACTOR;
+		yawSpeed *= DECAY_FACTOR;
+
+		if (Math.abs(pitchSpeed) < MIN_SPEED_THRESHOLD && Math.abs(yawSpeed) < MIN_SPEED_THRESHOLD)
+		{
+			pitchSpeed = 0.0f;
+			yawSpeed = 0.0f;
+			isMoving = false;
+			return;
+		}
+
+		rotate(pitchSpeed, yawSpeed, 0.0f);
 	}
 }

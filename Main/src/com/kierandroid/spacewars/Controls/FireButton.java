@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.kierandroid.spacewars.EntryPoint;
-import com.kierandroid.spacewars.Enumerations.ControlsConfiguration;
+import com.kierandroid.spacewars.Enumerations.JoystickConfiguration;
 import com.kierandroid.spacewars.Enumerations.State;
 import com.kierandroid.spacewars.Utilities.GameState;
 import com.kierandroid.spacewars.Utilities.GameUtils;
@@ -26,7 +26,7 @@ public class FireButton extends Actor
 	private float positionX;
 	private float positionY;
 
-	public FireButton(EntryPoint game, ControlsConfiguration configuration)
+	public FireButton(EntryPoint game, JoystickConfiguration configuration)
 	{
 		this.game = game;
 
@@ -48,7 +48,7 @@ public class FireButton extends Actor
 		boundingBox.width = buttonNormal.getWidth();
 		boundingBox.height = buttonNormal.getHeight();
 
-		if (configuration == ControlsConfiguration.Default)
+		if (configuration == JoystickConfiguration.Left)
 		{
 			boundingBox.x = Gdx.graphics.getWidth() - (buttonNormal.getWidth()*1.5f);
 		}

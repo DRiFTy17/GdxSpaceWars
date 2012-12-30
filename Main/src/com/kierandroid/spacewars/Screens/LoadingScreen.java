@@ -16,7 +16,6 @@ import com.kierandroid.spacewars.loaders.MeshLoader;
 
 public class LoadingScreen extends TransitionScreen
 {
-
 	private Stage _stage;
 
 	private Image _background;
@@ -39,6 +38,7 @@ public class LoadingScreen extends TransitionScreen
 	@Override
 	public void create()
 	{
+		// Load the assets for the loading screen
 		game.assets.load("textures/skysphere.png", Texture.class);
 		game.assets.load("images/libgdx_logo.png", Texture.class);
 		game.assets.load("images/loading_bar.png", Texture.class);
@@ -46,10 +46,13 @@ public class LoadingScreen extends TransitionScreen
 		game.assets.load("images/loading_frame_bg.png", Texture.class);
 		game.assets.load("images/loading_bar_hidden.png", Texture.class);
 
+		// Block until the above assets have finished loading
 		game.assets.finishLoading();
 
+		// Create the stage that will house our 2D scene
 		_stage = new Stage();
 
+		// Set the images for background, loading bar, ..etc.
 		_background = new Image(game.assets.get("textures/skysphere.png", Texture.class));
 		_background.setWidth(Gdx.graphics.getWidth());
 		_background.setHeight(Gdx.graphics.getHeight());
@@ -79,6 +82,7 @@ public class LoadingScreen extends TransitionScreen
 		_loadingFrameBackground.setX(_loadingHidden.getX());
 		_loadingFrameBackground.setY(_loadingHidden.getY());
 
+		// Add the actors to the stage
 		_stage.addActor(_background);
 		_stage.addActor(_loadingBar);
 		_stage.addActor(_loadingFrameBackground);
@@ -86,6 +90,7 @@ public class LoadingScreen extends TransitionScreen
 		_stage.addActor(_loadingFrame);
 		_stage.addActor(_logo);
 
+		// Load textures and images
 		game.assets.load("textures/atmosphere.png", Texture.class);
 		game.assets.load("textures/atmosphere_blue.png", Texture.class);
 		game.assets.load("textures/moon.png", Texture.class);
@@ -93,10 +98,13 @@ public class LoadingScreen extends TransitionScreen
 		game.assets.load("images/fire_button.png", Texture.class);
 		game.assets.load("images/fire_button_pressed.png", Texture.class);
 		game.assets.load("images/joystick.png", Texture.class);
+		game.assets.load("images/joystick_red.png", Texture.class);
 		game.assets.load("images/joystick_background.png", Texture.class);
 
+		// Load models
 		game.assets.setLoader(MeshLoaderResult.class, new MeshLoader(new InternalFileHandleResolver()));
 		game.assets.load("models/planet.obj", MeshLoaderResult.class);
+		game.assets.load("models/ship.obj", MeshLoaderResult.class);
 
 		_font = new BitmapFont();
 		_font.setColor(Color.WHITE);
@@ -110,14 +118,19 @@ public class LoadingScreen extends TransitionScreen
 	{
 		Gdx.gl.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
+		// If all assets have been loaded...
 		if (game.assets.update()) {
+			// If the screen was touched...
 			if (Gdx.input.isTouched()) {
+				// Go to the next screen
 				game.setScreen(new GameScreen(game));
 			}
 		}
 
+		// Interpolate the loading bar for smoothness
 		percent = Interpolation.linear.apply(percent, game.assets.getProgress(), 0.1f);
 
+		// Update the loading bar
 		_loadingHidden.setX(startX + endX * percent);
 		_loadingFrameBackground.setX(_loadingHidden.getX());
 		_loadingFrameBackground.setWidth(_loadingFrame.getWidth() - _loadingFrame.getWidth() * percent);
@@ -126,6 +139,7 @@ public class LoadingScreen extends TransitionScreen
 		_stage.act();
 		_stage.draw();
 
+		// Draw the percentage and completed message
 		_batch.begin();
 		_font.draw(_batch, (int)Math.ceil(game.assets.getProgress()*100) + "%", Gdx.graphics.getWidth()/2-30, _loadingFrame.getY()+_loadingFrame.getHeight()+20);
 

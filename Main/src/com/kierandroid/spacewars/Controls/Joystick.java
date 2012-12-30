@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.kierandroid.spacewars.EntryPoint;
-import com.kierandroid.spacewars.Enumerations.ControlsConfiguration;
+import com.kierandroid.spacewars.Enumerations.JoystickConfiguration;
 import com.kierandroid.spacewars.Enumerations.State;
 import com.kierandroid.spacewars.Math.MathHelper;
 import com.kierandroid.spacewars.Math.Vector2d;
@@ -31,7 +31,7 @@ public class Joystick extends Actor
 	public Vector2d position;
 	public Vector2d rotationAxis;
 	
-	public Joystick(EntryPoint game, ControlsConfiguration configuration)
+	public Joystick(EntryPoint game, JoystickConfiguration configuration, String backgroundTexture, String foregroundTexture)
 	{
 		this.game = game;
 
@@ -41,9 +41,9 @@ public class Joystick extends Actor
 
 		// Set sprites
 		//backgroundSprite = new Sprite(new TextureRegion(new Texture(Gdx.files.internal("images/joystick_background.png"))));
-		backgroundSprite = new Sprite(game.assets.get("images/joystick_background.png", Texture.class));
+		backgroundSprite = new Sprite(game.assets.get(backgroundTexture, Texture.class));
 		//joystickSprite = new Sprite(new TextureRegion(new Texture(Gdx.files.internal("images/joystick.png"))));
-		joystickSprite = new Sprite(game.assets.get("images/joystick.png", Texture.class));
+		joystickSprite = new Sprite(game.assets.get(foregroundTexture, Texture.class));
 		
 		// Resize
 		GameUtils.resize(backgroundSprite);
@@ -58,7 +58,7 @@ public class Joystick extends Actor
 		boundingBox.width = backgroundSprite.getWidth();
 		boundingBox.height = backgroundSprite.getHeight();
 
-		if (configuration == ControlsConfiguration.Default)
+		if (configuration == JoystickConfiguration.Left)
 		{
 			boundingBox.x = 0;
 		}
